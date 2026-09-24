@@ -1,1 +1,606 @@
 # Construtor-de-Treinamentos
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vamos construir um treinamento juntos | Universidade Penha</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marinho:#10233F;--fundo:#071528;--fundo2:#0C1E36;--amarelo:#FFC629;
+  --branco:#FFF;--cinza:#B9C6D8;--verde:#4FD1A5;--linha:rgba(255,198,41,.3);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Poppins',system-ui,sans-serif;color:var(--branco);min-height:100vh;padding-bottom:60px;
+  background:radial-gradient(900px 600px at 15% 10%,#122C4E 0%,transparent 60%),
+             radial-gradient(800px 600px at 85% 85%,#0F2946 0%,transparent 60%),var(--fundo);
+}
+.topo{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;
+  border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:rgba(7,21,40,.93);
+  backdrop-filter:blur(6px);z-index:20}
+.marca{display:flex;align-items:center;gap:10px}
+.marca img{width:34px;height:34px}
+.marca span{font-size:12px;color:var(--cinza);line-height:1.25}
+.passo-hud{font-size:12px;color:var(--amarelo);font-weight:600;text-align:right}
+.barra{height:3px;background:rgba(255,255,255,.08)}
+.barra i{display:block;height:100%;width:0;background:var(--amarelo);transition:width .4s ease}
+.palco{max-width:960px;margin:0 auto;padding:30px 20px}
+.etapa{display:none}
+.etapa.ativa{display:block;animation:entra .3s ease}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.olho{font-size:13px;color:var(--amarelo);font-weight:600;margin-bottom:10px}
+h1{font-size:clamp(28px,5vw,44px);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin-bottom:16px}
+h2{font-size:clamp(22px,3.4vw,32px);font-weight:600;line-height:1.2;margin-bottom:12px;letter-spacing:-.015em}
+h3{font-size:17px;font-weight:600;margin-bottom:6px}
+p{font-size:16px;line-height:1.6;color:var(--cinza);font-weight:300;margin-bottom:14px}
+p.destaque{color:var(--branco);font-size:18px}
+b{font-weight:600;color:var(--branco)}
+.amarelo{color:var(--amarelo)}
+.cartao{background:rgba(255,255,255,.05);border-left:3px solid var(--amarelo);padding:16px 18px;border-radius:5px;margin-bottom:14px}
+.cartao p{margin:0;font-size:15px}
+.cartao h3{color:var(--amarelo)}
+
+/* cards que viram */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin:18px 0}
+.card{perspective:1000px;height:180px;cursor:pointer;border:none;background:none;padding:0;font-family:inherit}
+.card-in{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.card.virado .card-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;padding:18px;
+  display:flex;flex-direction:column;justify-content:center;text-align:left}
+.frente{background:linear-gradient(150deg,var(--marinho),var(--fundo2));border:1px solid rgba(255,198,41,.3)}
+.frente h3{font-size:19px;color:var(--amarelo);margin-bottom:8px}
+.frente small{font-size:13px;color:var(--cinza);font-weight:300}
+.verso{background:linear-gradient(150deg,#16302A,#0E1B2C);border:1px solid rgba(79,209,165,.35);transform:rotateY(180deg)}
+.verso p{font-size:14.5px;color:#DCE7F2;margin:0;line-height:1.5}
+.contador{font-size:14px;color:var(--cinza);margin-bottom:10px}
+
+/* seleção */
+.lista{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:10px;margin:16px 0}
+.item{
+  text-align:left;font-family:inherit;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.12);
+  border-radius:6px;padding:13px 15px;cursor:pointer;color:var(--branco);font-size:15.5px;line-height:1.35
+}
+.item small{display:block;font-size:13.5px;color:var(--cinza);font-weight:300;margin-top:4px;line-height:1.4}
+.item:hover{border-color:rgba(255,198,41,.6)}
+.item.on{border-color:var(--amarelo);background:rgba(255,198,41,.13)}
+.faixa-tit{font-size:15px;font-weight:600;color:var(--amarelo);margin:20px 0 4px}
+.faixa-tit span{color:var(--cinza);font-weight:300;font-size:14px}
+label{display:block;font-size:15px;font-weight:600;margin-bottom:6px}
+.dica{font-size:14px;color:var(--cinza);font-weight:300;margin-bottom:8px}
+input,textarea,select{width:100%;font-family:inherit;font-size:16px;padding:12px 14px;border-radius:5px;
+  border:2px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--branco);outline:none}
+textarea{min-height:80px;resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:var(--amarelo)}
+select option{background:#10233F}
+.campo{margin-bottom:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{font-family:inherit;font-size:14px;color:var(--cinza);cursor:pointer;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.16);border-radius:30px;padding:8px 14px}
+.chip:hover{border-color:var(--amarelo);color:var(--branco)}
+.chip.on{background:rgba(255,198,41,.18);border-color:var(--amarelo);color:var(--branco);font-weight:500}
+.preview{background:rgba(255,198,41,.09);border:1px dashed rgba(255,198,41,.45);border-radius:6px;
+  padding:16px;margin-top:14px;font-size:16px;line-height:1.55;color:var(--branco)}
+.acoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;align-items:center}
+.btn{font-family:inherit;font-size:16px;font-weight:600;padding:13px 26px;border:none;border-radius:5px;cursor:pointer}
+.btn-ouro{background:var(--amarelo);color:#10233F}
+.btn-ouro:hover{background:#FFD457}
+.btn-ouro:disabled{opacity:.4;cursor:not-allowed}
+.btn-linha{background:transparent;color:var(--branco);border:2px solid rgba(255,255,255,.22)}
+.btn-linha:hover{border-color:var(--amarelo)}
+.btn:focus-visible,.chip:focus-visible,.card:focus-visible,.item:focus-visible{outline:2px solid var(--amarelo);outline-offset:3px}
+.aviso{font-size:14.5px;color:var(--amarelo);margin-top:10px;min-height:20px}
+.briefing{background:rgba(255,255,255,.05);border-radius:8px;padding:22px;margin-top:18px;border-top:3px solid var(--amarelo)}
+.briefing h3{color:var(--amarelo);font-size:13.5px;letter-spacing:.02em;margin:18px 0 5px}
+.briefing h3:first-child{margin-top:0}
+.briefing p{color:var(--branco);font-size:15.5px;margin:0;line-height:1.55}
+.producao{background:rgba(79,209,165,.09);border-left:3px solid var(--verde);border-radius:6px;padding:18px;margin-top:18px}
+.producao h3{color:var(--verde);font-size:16px;margin-bottom:10px}
+.producao li{font-size:15.5px;line-height:1.5;color:#DCE7F2;font-weight:300;margin-bottom:8px;list-style:none;padding-left:20px;position:relative}
+.producao li::before{content:"";position:absolute;left:0;top:.6em;width:10px;height:2px;background:var(--verde)}
+.selo{display:inline-block;padding:6px 14px;border:1px solid var(--verde);color:var(--verde);border-radius:30px;
+  font-size:13px;font-weight:600;margin-bottom:14px}
+@media print{
+  body{background:#fff;color:#000}
+  .topo,.barra,.acoes,.etapa:not(.ativa){display:none}
+  .briefing,.producao{background:#fff;border:1px solid #999}
+  .briefing p,.producao li,h2{color:#000}
+}
+</style>
+</head>
+<body>
+
+<div class="topo">
+  <div class="marca">
+    <img src="data:image/png;base64,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" alt="Grupo Penha">
+    <span>Universidade Penha<br>Construtor de treinamento</span>
+  </div>
+  <div class="passo-hud" id="hud">Abertura</div>
+</div>
+<div class="barra"><i id="barra"></i></div>
+
+<div class="palco">
+
+  <!-- 0 -->
+  <section class="etapa ativa" data-nome="Abertura">
+    <div class="olho">Ferramenta de apoio para Business Partners</div>
+    <h1>Vamos construir um<br>treinamento <span class="amarelo">juntos</span></h1>
+    <p class="destaque">Seis passos. Você escolhe as opções em cada tela e no final sai um briefing pronto, com a lista do que precisa ser produzido.</p>
+    <div class="cartao"><h3>O que você precisa ter em mãos</h3><p>Um tema real de uma das suas áreas. Só isso.</p></div>
+    <div class="cartao"><h3>Tempo</h3><p>Cerca de dez minutos.</p></div>
+    <div class="acoes"><button class="btn btn-ouro" data-ir="1">Começar</button></div>
+  </section>
+
+  <!-- 1 CARDS -->
+  <section class="etapa" data-nome="Aquecimento">
+    <div class="olho">Passo 1 de 6</div>
+    <h2>Relembrando as bases</h2>
+    <p>Toque nos cards para virar. É a régua que vamos usar nos próximos passos.</p>
+    <div class="contador" id="contador-cards">0 de 5 virados</div>
+    <div class="cards" id="cards"></div>
+    <div class="acoes"><button class="btn btn-ouro" id="btn-cards" data-ir="2" disabled>Vire todos para continuar</button></div>
+  </section>
+
+  <!-- 2 TEMA -->
+  <section class="etapa" data-nome="O tema">
+    <div class="olho">Passo 2 de 6</div>
+    <h2>Qual é o tema</h2>
+    <div class="campo">
+      <label for="f-tema">Tema do treinamento</label>
+      <div class="dica">Escreva como você diria hoje. A gente lapida no passo do objetivo.</div>
+      <input id="f-tema" placeholder="Ex.: conversa de feedback com a equipe">
+    </div>
+    <div class="campo">
+      <label for="f-publico">Para quem</label>
+      <select id="f-publico">
+        <option>Equipe operacional</option>
+        <option>Liderança e supervisão</option>
+        <option>Time administrativo</option>
+        <option>Recém-admitidos</option>
+        <option>Várias unidades ao mesmo tempo</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="f-problema">Qual problema da área isso resolve</label>
+      <div class="dica">Uma frase basta. É o que dá sentido ao treinamento para quem vai participar.</div>
+      <input id="f-problema" placeholder="Ex.: o supervisor evita conversas e os desvios se repetem">
+    </div>
+    <div class="acoes">
+      <button class="btn btn-linha" data-ir="1">Voltar</button>
+      <button class="btn btn-ouro" id="btn-tema">Continuar</button>
+    </div>
+    <div class="aviso" id="av-tema"></div>
+  </section>
+
+  <!-- 3 ANDRAGOGIA -->
+  <section class="etapa" data-nome="Andragogia">
+    <div class="olho">Passo 3 de 6</div>
+    <h2>Como o adulto aprende</h2>
+    <p>Adulto aprende quando entende o motivo, quando pode usar a experiência dele e quando aplica logo. Escolha pelo menos <b>três decisões</b> que você vai tomar neste treinamento para respeitar isso.</p>
+    <div class="lista" id="andragogia"></div>
+    <div class="acoes">
+      <button class="btn btn-linha" data-ir="2">Voltar</button>
+      <button class="btn btn-ouro" id="btn-andra">Continuar</button>
+    </div>
+    <div class="aviso" id="av-andra"></div>
+  </section>
+
+  <!-- 4 BLOOM -->
+  <section class="etapa" data-nome="Objetivo">
+    <div class="olho">Passo 4 de 6</div>
+    <h2>O objetivo: o que dá para ver a pessoa fazendo</h2>
+    <p>Escolha o nível e depois o verbo. Verbo bom é aquele que você consegue ver acontecendo no trabalho.</p>
+    <div class="campo">
+      <label>Nível</label>
+      <div class="chips" id="niveis"></div>
+    </div>
+    <div class="campo">
+      <label>Verbo</label>
+      <div class="dica" id="dica-verbo">Escolha o nível para ver os verbos.</div>
+      <div class="chips" id="verbos"></div>
+    </div>
+    <div class="campo">
+      <label for="f-oque">Fazendo o quê</label>
+      <input id="f-oque" placeholder="Ex.: a conversa de feedback com um integrante da equipe">
+    </div>
+    <div class="campo">
+      <label for="f-obs">Como você vai observar que a pessoa fez isso</label>
+      <div class="dica">Descreva a cena: onde você estaria e o que veria acontecendo.</div>
+      <textarea id="f-obs" placeholder="Ex.: acompanho uma conversa real e vejo se ele descreve o fato, escuta e fecha com um combinado registrado"></textarea>
+    </div>
+    <div class="preview" id="preview">Ao final, o colaborador será capaz de <b>...</b></div>
+    <div class="acoes">
+      <button class="btn btn-linha" data-ir="3">Voltar</button>
+      <button class="btn btn-ouro" id="btn-bloom">Continuar</button>
+    </div>
+    <div class="aviso" id="av-bloom"></div>
+  </section>
+
+  <!-- 5 70:20:10 -->
+  <section class="etapa" data-nome="70:20:10">
+    <div class="olho">Passo 5 de 6</div>
+    <h2>Onde esse aprendizado vai acontecer</h2>
+    <p>Escolha <b>uma opção em cada faixa</b>. O curso sozinho é só a menor parte.</p>
+    <div class="faixa-tit">70 por cento <span>na prática, fazendo o trabalho</span></div>
+    <div class="lista" id="l70"></div>
+    <div class="faixa-tit">20 por cento <span>com outras pessoas</span></div>
+    <div class="lista" id="l20"></div>
+    <div class="faixa-tit">10 por cento <span>conteúdo formal</span></div>
+    <div class="lista" id="l10"></div>
+    <div class="acoes">
+      <button class="btn btn-linha" data-ir="4">Voltar</button>
+      <button class="btn btn-ouro" id="btn-faixas">Continuar</button>
+    </div>
+    <div class="aviso" id="av-faixas"></div>
+  </section>
+
+  <!-- 6 METODOLOGIAS -->
+  <section class="etapa" data-nome="Metodologia">
+    <div class="olho">Passo 6 de 6, parte A</div>
+    <h2>Escolha a metodologia ativa</h2>
+    <p>Trinta formatos. Marque <b>um ou dois</b>. Cada escolha vira um item na lista de produção no final.</p>
+    <div class="campo"><input id="busca-metodo" placeholder="Filtrar por palavra: vídeo, caso, prática, grupo..."></div>
+    <div class="lista" id="metodos"></div>
+    <div class="acoes">
+      <button class="btn btn-linha" data-ir="5">Voltar</button>
+      <button class="btn btn-ouro" id="btn-metodo">Continuar</button>
+    </div>
+    <div class="aviso" id="av-metodo"></div>
+  </section>
+
+  <!-- 7 AVALIAÇÃO -->
+  <section class="etapa" data-nome="Avaliação">
+    <div class="olho">Passo 6 de 6, parte B</div>
+    <h2>Como você vai avaliar</h2>
+    <p>Avaliação não é só pergunta e resposta. Escolha <b>uma ou duas</b> formas de saber se a pessoa aprendeu.</p>
+    <div class="lista" id="avaliacoes"></div>
+    <div class="acoes">
+      <button class="btn btn-linha" data-ir="6">Voltar</button>
+      <button class="btn btn-ouro" id="btn-aval">Gerar briefing</button>
+    </div>
+    <div class="aviso" id="av-aval"></div>
+  </section>
+
+  <!-- 8 BRIEFING -->
+  <section class="etapa" data-nome="Briefing">
+    <span class="selo">Pronto</span>
+    <h2>Seu treinamento está desenhado</h2>
+    <p>Leve para a conversa com o gestor, para o autor da área ou para abrir a solicitação na Universidade Penha.</p>
+    <div class="briefing" id="briefing"></div>
+    <div class="producao" id="producao"></div>
+    <div class="acoes">
+      <button class="btn btn-ouro" id="btn-copiar">Copiar</button>
+      <button class="btn btn-linha" id="btn-baixar">Baixar em texto</button>
+      <button class="btn btn-linha" id="btn-imprimir">Imprimir</button>
+      <button class="btn btn-linha" id="btn-novo">Construir outro</button>
+    </div>
+    <div class="aviso" id="av-copia"></div>
+  </section>
+
+</div>
+
+<script>
+/* ---------- navegação ---------- */
+const etapas = Array.from(document.querySelectorAll('.etapa'));
+const hud = document.getElementById('hud');
+const barra = document.getElementById('barra');
+let atual = 0;
+function ir(i){
+  atual = Math.max(0, Math.min(etapas.length - 1, i));
+  etapas.forEach((e,k)=>e.classList.toggle('ativa', k === atual));
+  hud.textContent = etapas[atual].dataset.nome;
+  barra.style.width = (atual / (etapas.length - 1) * 100) + '%';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('[data-ir]').forEach(b=>b.addEventListener('click', ()=>ir(+b.dataset.ir)));
+
+/* ---------- seleção genérica ---------- */
+function semAcento(t){
+  return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+function montarLista(alvo, dados, selecionados, max){
+  const box = document.getElementById(alvo);
+  box.innerHTML = '';
+  dados.forEach(d=>{
+    const b = document.createElement('button');
+    b.className = 'item'; b.type = 'button';
+    b.innerHTML = '<b>' + d[0] + '</b>' + (d[1] ? '<small>' + d[1] + '</small>' : '');
+    b.dataset.busca = semAcento(d[0] + ' ' + (d[1] || ''));
+    b.addEventListener('click', ()=>{
+      if(selecionados.has(d[0])){ selecionados.delete(d[0]); b.classList.remove('on'); return; }
+      if(max && selecionados.size >= max){
+        const primeiro = selecionados.values().next().value;
+        selecionados.delete(primeiro);
+        box.querySelectorAll('.item').forEach(x=>{ if(x.querySelector('b').textContent === primeiro) x.classList.remove('on'); });
+      }
+      selecionados.add(d[0]); b.classList.add('on');
+    });
+    box.appendChild(b);
+  });
+}
+
+/* ---------- passo 1: cards ---------- */
+const CARDS = [
+  ['Andragogia','Como o adulto aprende','Ele precisa saber por que, quer usar a experiência dele e só retém o que aplica logo. Comece pelo problema real da área.'],
+  ['70:20:10','Onde o aprendizado acontece','70 fazendo o trabalho, 20 com outras pessoas, 10 no conteúdo formal. O curso sozinho entrega só a menor fatia.'],
+  ['Taxonomia de Bloom','O verbo define tudo','Se você não consegue ver a pessoa fazendo, não é objetivo. Fora: conhecer, saber, conscientizar. Dentro: identificar, executar, conduzir, propor.'],
+  ['Metodologias ativas','Quem faz, aprende','O formato nasce do objetivo. Prática, caso real, demonstração, dramatização, problema real: tudo melhor do que assistir.'],
+  ['Avaliação','Muito além do quiz','Observação no posto, execução assistida, entrega de produto real, ensinar o colega. Avaliar é ver a pessoa fazendo.']
+];
+const boxCards = document.getElementById('cards');
+let virados = 0;
+CARDS.forEach(c=>{
+  const b = document.createElement('button');
+  b.className = 'card'; b.type = 'button';
+  b.innerHTML = '<div class="card-in">' +
+    '<div class="face frente"><h3>' + c[0] + '</h3><small>' + c[1] + '</small>' +
+    '<small style="margin-top:12px;color:#FFC629">Toque para virar</small></div>' +
+    '<div class="face verso"><p>' + c[2] + '</p></div></div>';
+  b.addEventListener('click', ()=>{
+    b.classList.toggle('virado');
+    if(b.classList.contains('virado') && !b.dataset.contado){
+      b.dataset.contado = '1'; virados++;
+      document.getElementById('contador-cards').textContent = virados + ' de 5 virados';
+      if(virados === 5){
+        const btn = document.getElementById('btn-cards');
+        btn.disabled = false; btn.textContent = 'Continuar';
+      }
+    }
+  });
+  boxCards.appendChild(b);
+});
+
+/* ---------- passo 2 ---------- */
+document.getElementById('btn-tema').addEventListener('click', ()=>{
+  const t = document.getElementById('f-tema').value.trim();
+  if(t.length < 4){ document.getElementById('av-tema').textContent = 'Escreva o tema para continuar.'; return; }
+  document.getElementById('av-tema').textContent = '';
+  ir(3);
+});
+
+/* ---------- passo 3: andragogia ---------- */
+const ANDRAGOGIA = [
+  ['Abrir com o problema real','Começar por uma situação que aconteceu na área, não pelo conceito.'],
+  ['Dizer logo para que serve','Nos primeiros minutos, deixar claro o que muda no dia a dia de quem está ali.'],
+  ['Usar a experiência do grupo','Pedir que os mais antigos contem como resolvem hoje e usar isso como conteúdo.'],
+  ['Garantir uso imediato','Definir o que a pessoa vai aplicar já no turno ou na semana seguinte.'],
+  ['Dar alguma escolha','Deixar o grupo escolher o caso, a ordem dos temas ou o exemplo a ser trabalhado.'],
+  ['Usar exemplos do posto dela','Falar da máquina, do sistema e da rotina daquela área, não de exemplos genéricos.'],
+  ['Deixar errar em ambiente seguro','Criar um espaço de prática onde errar não gera consequência real.'],
+  ['Falar a língua da área','Cortar sigla e termo de RH. Usar as palavras que o time usa.'],
+  ['Mostrar o ganho pessoal','Dizer o que a pessoa ganha: menos retrabalho, menos cobrança, mais autonomia.'],
+  ['Fechar com combinado dito por eles','Terminar com o próprio grupo dizendo em voz alta o que vai fazer diferente.']
+];
+const selAndra = new Set();
+montarLista('andragogia', ANDRAGOGIA, selAndra);
+document.getElementById('btn-andra').addEventListener('click', ()=>{
+  if(selAndra.size < 3){ document.getElementById('av-andra').textContent = 'Escolha pelo menos três.'; return; }
+  document.getElementById('av-andra').textContent = '';
+  ir(4);
+});
+
+/* ---------- passo 4: Bloom ---------- */
+const NIVEIS = {
+  'Base':['identificar','reconhecer','listar','explicar','descrever','localizar'],
+  'Meio':['executar','aplicar','conduzir','ajustar','inspecionar','diagnosticar','operar','preencher'],
+  'Topo':['analisar','priorizar','decidir','propor','redesenhar','avaliar','treinar outro']
+};
+const AJUDA = {
+  'Base':'Base: a pessoa precisa reconhecer e explicar. Serve para assunto novo.',
+  'Meio':'Meio: a pessoa precisa fazer. É onde fica a maior parte dos treinamentos da operação.',
+  'Topo':'Topo: a pessoa precisa julgar, decidir ou ensinar. Serve para liderança, especialista e multiplicador.'
+};
+let nivel = '', verbo = '';
+const boxN = document.getElementById('niveis'), boxV = document.getElementById('verbos');
+Object.keys(NIVEIS).forEach(n=>{
+  const b = document.createElement('button');
+  b.className = 'chip'; b.type = 'button'; b.textContent = n;
+  b.addEventListener('click', ()=>{
+    boxN.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); nivel = n; verbo = '';
+    document.getElementById('dica-verbo').textContent = AJUDA[n];
+    boxV.innerHTML = '';
+    NIVEIS[n].forEach(v=>{
+      const c = document.createElement('button');
+      c.className = 'chip'; c.type = 'button'; c.textContent = v;
+      c.addEventListener('click', ()=>{
+        boxV.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+        c.classList.add('on'); verbo = v; preview();
+      });
+      boxV.appendChild(c);
+    });
+    preview();
+  });
+  boxN.appendChild(b);
+});
+document.getElementById('f-oque').addEventListener('input', preview);
+function preview(){
+  const o = document.getElementById('f-oque').value.trim() || '...';
+  document.getElementById('preview').innerHTML =
+    'Ao final, o colaborador será capaz de <b>' + (verbo || '...') + ' ' + o + '</b>.' +
+    (nivel ? '<br><span style="font-size:14px;color:#B9C6D8">Nível ' + nivel.toLowerCase() + '</span>' : '');
+}
+document.getElementById('btn-bloom').addEventListener('click', ()=>{
+  const o = document.getElementById('f-oque').value.trim();
+  const ob = document.getElementById('f-obs').value.trim();
+  if(!verbo || o.length < 4){ document.getElementById('av-bloom').textContent = 'Escolha o nível, o verbo e diga fazendo o quê.'; return; }
+  if(ob.length < 10){ document.getElementById('av-bloom').textContent = 'Descreva como você vai observar isso acontecendo. É o que vira a avaliação depois.'; return; }
+  document.getElementById('av-bloom').textContent = '';
+  ir(5);
+});
+
+/* ---------- passo 5: 70:20:10 ---------- */
+const F70 = [
+  ['Executar a tarefa no próprio posto','Com prazo definido e apoio combinado.'],
+  ['Assumir uma melhoria pequena da área','Algo que ela conduz do começo ao fim.'],
+  ['Cobrir alguém por um turno','Assumir a função com rede de apoio.'],
+  ['Aplicar duas vezes por semana e registrar','Frequência combinada e anotação simples do que aconteceu.'],
+  ['Conduzir uma reunião ou um DDS','Ela assume a condução do encontro da equipe.'],
+  ['Resolver um caso real que está em aberto','Um problema que a área tem hoje, com prazo.'],
+  ['Participar de uma análise real','Investigação de erro, quase acidente ou desvio do processo.']
+];
+const F20 = [
+  ['Acompanhamento de alguém mais experiente','Nas primeiras aplicações, lado a lado.'],
+  ['Padrinho nomeado por 30 dias','Uma pessoa responsável, com nome definido.'],
+  ['Retorno do gestor a cada quinze dias','Conversa curta sobre o que foi observado.'],
+  ['Observação entre pares','Duplas observam um ao outro com roteiro curto.'],
+  ['Encontro mensal de troca','Quem faz a mesma função discute casos reais.'],
+  ['Mentoria com quem já ocupou a função','Uma hora por mês, pauta definida.'],
+  ['Apresentar o resultado ao time','Contar o que aplicou e ouvir o retorno do grupo.']
+];
+const F10 = [
+  ['Trilha ou curso na Universidade Penha','Conteúdo estruturado na plataforma.'],
+  ['Vídeo curto de até cinco minutos','Gravado com o especialista da própria área.'],
+  ['Guia rápido de uma página','Fica no local de trabalho, no ponto de uso.'],
+  ['Encontro presencial de uma hora','Conduzido pelo autor da área.'],
+  ['Leitura comentada do procedimento','Só do trecho que resolve a situação.'],
+  ['Áudio curto para o deslocamento','Formato leve para quem não tem computador.']
+];
+const s70 = new Set(), s20 = new Set(), s10 = new Set();
+montarLista('l70', F70, s70, 1);
+montarLista('l20', F20, s20, 1);
+montarLista('l10', F10, s10, 1);
+document.getElementById('btn-faixas').addEventListener('click', ()=>{
+  if(!s70.size || !s20.size){
+    document.getElementById('av-faixas').textContent = 'Escolha pelo menos a prática e o acompanhamento. São as faixas que fazem a diferença.';
+    return;
+  }
+  document.getElementById('av-faixas').textContent = '';
+  ir(6);
+});
+
+/* ---------- passo 6: metodologias ---------- */
+const METODOS = [
+  ['Estudo de caso real','Situação da unidade sem o desfecho, o grupo decide e compara.','Escreva o caso em uma página, com o desfecho em separado.'],
+  ['Cenário aberto: o que você faria','Três situações curtas com decisão a tomar.','Escreva três cenários de cinco linhas cada.'],
+  ['Demonstração com execução narrada','Você faz, explica o porquê e a pessoa repete narrando.','Monte o passo a passo com o motivo de cada etapa.'],
+  ['Simulação da tarefa','Ambiente controlado reproduzindo a atividade real.','Descreva o cenário e monte o checklist de observação.'],
+  ['Simulação de emergência','Cenário com hora marcada, observadores e debriefing.','Escreva o cenário, os papéis e o roteiro do debriefing.'],
+  ['Dramatização','Cenas curtas de conversa difícil com papéis definidos.','Escreva três cenas com o papel de cada participante.'],
+  ['Troca de papéis','A mesma cena invertida na segunda rodada.','Defina o foco de observação da plateia.'],
+  ['Caça ao desvio','Cena ou foto com erros propositais para encontrar.','Monte a imagem ou a cena e o gabarito dos desvios.'],
+  ['Roteiro do erro, cinco porquês','Parte do problema recorrente até a causa raiz.','Monte a folha de análise com o problema já preenchido.'],
+  ['Mapa construído pelo grupo','O time desenha o fluxo ou os riscos da própria área.','Imprima a planta ou o fluxo em branco.'],
+  ['Rodízio de estações','Bancadas com tarefa curta, grupos girando.','Defina cinco estações, a tarefa e o tempo de cada uma.'],
+  ['Ensinar para aprender','A pessoa prepara e conduz o tema para os colegas.','Monte um roteiro de dez minutos para ela conduzir.'],
+  ['Aprendizagem baseada em problema','Problema real com dados, proposta apresentada à liderança.','Escreva o briefing do problema com os dados reais.'],
+  ['Desafio de campo entre encontros','Missão executável no turno seguinte, com evidência.','Descreva a missão, o prazo e a evidência esperada.'],
+  ['Observação entre pares','Duplas observam a execução um do outro.','Crie o roteiro de observação de uma página.'],
+  ['Apoio no ponto de uso','Checklist ou guia dentro do próprio fluxo de trabalho.','Produza o cartão, o checklist ou o QR code do posto.'],
+  ['Série de microlearning','Quatro peças de três minutos, uma micro tarefa em cada.','Escreva o roteiro das quatro peças e as tarefas.'],
+  ['Vídeo curto com o especialista','Até três minutos, gravado na própria área.','Escreva o roteiro de três minutos e marque a gravação.'],
+  ['Tour guiado pela área','Caminhada com paradas nos pontos críticos.','Defina as paradas e a pergunta de cada uma.'],
+  ['Debate estruturado','Dois lados defendendo posições sobre o tema.','Escreva a tese, os papéis e as regras do debate.'],
+  ['Decisão em grupo com evidências','O grupo julga um caso a partir de documentos reais.','Monte o caso e o conjunto de evidências.'],
+  ['Painel com veteranos','Quem tem anos de casa responde ao grupo.','Monte a pauta e as perguntas do painel.'],
+  ['Linha do tempo do processo','Cartões fora de ordem para o grupo organizar.','Produza os cartões das etapas do processo.'],
+  ['Quebra-cabeça de conteúdo','Cada grupo domina uma parte e ensina as demais.','Divida o conteúdo em quatro blocos independentes.'],
+  ['Checklist construído pelo grupo','O time monta o próprio padrão e o gestor valida.','Prepare a folha em branco e a validação com o gestor.'],
+  ['Cartão de bolso','Resumo de uma página que fica com a pessoa.','Produza a arte do cartão com o passo a passo.'],
+  ['Desafio entre turnos','Missão com placar simbólico entre equipes.','Defina a regra, o prazo e como o resultado é divulgado.'],
+  ['Lição aprendida de evento real','Análise de um acontecimento histórico da empresa.','Escreva o resumo do evento e as perguntas de análise.'],
+  ['Prática em bancada ou maquete','Montagem física fora da linha de produção.','Monte a bancada e a lista de materiais.'],
+  ['Acompanhamento do líder em campo','O líder observa a execução e devolve na hora.','Crie o roteiro de observação e de devolutiva do líder.']
+];
+const selMet = new Set();
+montarLista('metodos', METODOS.map(m=>[m[0], m[1]]), selMet, 2);
+document.getElementById('busca-metodo').addEventListener('input', e=>{
+  const t = semAcento(e.target.value);
+  document.querySelectorAll('#metodos .item').forEach(i=>{
+    i.style.display = i.dataset.busca.includes(t) ? '' : 'none';
+  });
+});
+document.getElementById('btn-metodo').addEventListener('click', ()=>{
+  if(!selMet.size){ document.getElementById('av-metodo').textContent = 'Escolha pelo menos uma metodologia.'; return; }
+  document.getElementById('av-metodo').textContent = '';
+  ir(7);
+});
+
+/* ---------- passo 7: avaliação ---------- */
+const AVALIACOES = [
+  ['Observação no posto','Você acompanha a execução real com um roteiro curto.','Crie o roteiro de observação com os pontos a verificar.'],
+  ['Execução assistida','A pessoa executa sozinha narrando, você só registra.','Crie o checklist de execução passo a passo.'],
+  ['Demonstração prática avaliada','Ela demonstra a tarefa completa para ser avaliada.','Defina os critérios de aprovação da demonstração.'],
+  ['Rubrica com níveis','Escala do iniciante ao autônomo, com descrição de cada nível.','Monte a rubrica com três ou quatro níveis.'],
+  ['Caso com decisão justificada','Ela decide e explica o porquê da decisão.','Escreva o caso e a resposta esperada.'],
+  ['Simulação avaliada','Observadores acompanham com checklist durante a simulação.','Monte o cenário e a ficha dos observadores.'],
+  ['Autoavaliação antes e depois','A própria pessoa se posiciona na escala nos dois momentos.','Crie a escala de autoavaliação com os mesmos itens.'],
+  ['Avaliação do gestor em 30 dias','O gestor responde o que mudou na rotina.','Monte o formulário curto para o gestor.'],
+  ['Avaliação entre pares','O colega observa e devolve com base em critérios.','Crie a ficha de avaliação entre pares.'],
+  ['Diário de aplicação','Registro simples do que a pessoa aplicou e do que aconteceu.','Produza o modelo de registro de uma página.'],
+  ['Entrega de produto real','Ela entrega algo usado no trabalho: planilha, checklist, procedimento.','Defina o produto esperado e o critério de aceite.'],
+  ['Ensinar o conteúdo','Ela explica o tema para os colegas e você avalia a condução.','Defina o tempo, o tema e os critérios da apresentação.'],
+  ['Quiz de cenário','Perguntas de situação real, não de memorização.','Escreva cinco cenários com alternativas de decisão.'],
+  ['Decisão rápida em campo','Situações do dia a dia respondidas na hora, no local.','Liste dez situações curtas para aplicar em campo.'],
+  ['Encontrar e corrigir o erro','Material com falhas para ela identificar e ajustar.','Produza o material com os erros e o gabarito.'],
+  ['Ordenar as etapas','Sequência embaralhada para colocar na ordem correta.','Monte os cartões com as etapas do processo.'],
+  ['Preencher documento real','Ela preenche o formulário ou o checklist verdadeiro.','Separe o documento em branco e o modelo correto.'],
+  ['Indicador antes e depois','O número da área é a evidência.','Defina o indicador e a data das duas medições.'],
+  ['Conversa com o gestor','Entrevista curta sobre o que mudou na equipe.','Monte as três perguntas da conversa.'],
+  ['Verificação combinada em campo','Visita de checagem em data acordada com a equipe.','Defina a data e os pontos que serão verificados.']
+];
+const selAval = new Set();
+montarLista('avaliacoes', AVALIACOES.map(a=>[a[0], a[1]]), selAval, 2);
+document.getElementById('btn-aval').addEventListener('click', ()=>{
+  if(!selAval.size){ document.getElementById('av-aval').textContent = 'Escolha pelo menos uma forma de avaliar.'; return; }
+  document.getElementById('av-aval').textContent = '';
+  gerar();
+});
+
+/* ---------- briefing ---------- */
+let texto = '';
+function gerar(){
+  const v = id => document.getElementById(id).value.trim();
+  const obj = 'Ao final, o colaborador será capaz de ' + verbo + ' ' + v('f-oque') + '.';
+  const lista = s => Array.from(s).join('; ');
+
+  const dados = [
+    ['Tema', v('f-tema')],
+    ['Público', v('f-publico')],
+    ['Problema que resolve', v('f-problema') || 'A definir com o gestor.'],
+    ['Objetivo', obj],
+    ['Nível de Bloom', nivel],
+    ['Como será observado', v('f-obs')],
+    ['Decisões andragógicas', lista(selAndra)],
+    ['70 por cento, prática', lista(s70)],
+    ['20 por cento, com outras pessoas', lista(s20)],
+    ['10 por cento, conteúdo formal', lista(s10) || 'A definir com a trilha.'],
+    ['Metodologia', lista(selMet)],
+    ['Avaliação', lista(selAval)]
+  ];
+  document.getElementById('briefing').innerHTML =
+    dados.map(d=>'<h3>' + d[0].toUpperCase() + '</h3><p>' + d[1] + '</p>').join('');
+
+  const tarefas = [];
+  METODOS.forEach(m=>{ if(selMet.has(m[0])) tarefas.push(m[2]); });
+  AVALIACOES.forEach(a=>{ if(selAval.has(a[0])) tarefas.push(a[2]); });
+  if(s10.size) tarefas.push('Acione a trilha correspondente para o item de conteúdo formal escolhido.');
+  tarefas.push('Combine com o gestor quem acompanha a prática e em que data você volta para verificar.');
+
+  document.getElementById('producao').innerHTML =
+    '<h3>O que produzir agora</h3><ul>' + tarefas.map(t=>'<li>' + t + '</li>').join('') + '</ul>';
+
+  texto = 'BRIEFING DE TREINAMENTO, UNIVERSIDADE PENHA\n\n' +
+    dados.map(d=>d[0].toUpperCase() + '\n' + d[1]).join('\n\n') +
+    '\n\nO QUE PRODUZIR AGORA\n' + tarefas.map(t=>'- ' + t).join('\n');
+  ir(8);
+}
+
+document.getElementById('btn-copiar').addEventListener('click', ()=>{
+  navigator.clipboard.writeText(texto)
+    .then(()=>document.getElementById('av-copia').textContent = 'Copiado.')
+    .catch(()=>document.getElementById('av-copia').textContent = 'Não foi possível copiar. Use o botão de baixar.');
+});
+document.getElementById('btn-baixar').addEventListener('click', ()=>{
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([texto], {type:'text/plain;charset=utf-8'}));
+  a.download = 'briefing-treinamento.txt'; a.click(); URL.revokeObjectURL(a.href);
+});
+document.getElementById('btn-imprimir').addEventListener('click', ()=>window.print());
+document.getElementById('btn-novo').addEventListener('click', ()=>location.reload());
+
+ir(0);
+</script>
+</body>
+</html>
